@@ -1,7 +1,7 @@
 {
   "name": "bookmania",
   "version": "1.0.0",
-  "description": "- [FakeReference](https://FakeReference.com)",
+  "description": "- fullstack MERN ecommerce",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
