@@ -1,0 +1,12 @@
+{
+  "name": "bookmania",
+  "version": "1.0.0",
+  "description": "- [FakeReference](https://FakeReference.com)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["ecommerce"],
+  "author": "Luis Febro & Ryan Dhungel",
+  "license": "ISC"
+}
