@@ -1,10 +1,26 @@
 const express = require("express");
-const app = express();
-require("dotenv").config();
+const mongoose = require("mongoose");
+const { mongoKey } = require('./config/keys');
 
-app.get("/", (req, res) => {
-    res.send("hello from node");
-});
+// app
+const app = express();
+
+// DATABASE CONFIG
+// Connect to Mongo
+const options = {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+}
+mongoose
+    .connect(mongoKey, options)
+    .then(() => console.log(`MongoDB Connected...`))
+    .catch(err => console.log(err));
+// END DATABASE CONFIG
+
+// Use Routes middleware
+app.use('/api/user', require('./routes/user'));
 
 const port = process.env.PORT || 8000;
 
