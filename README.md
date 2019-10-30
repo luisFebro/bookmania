@@ -1,4 +1,4 @@
-- [React Node FullStack Library](https://www.udemy.com/share/101ZGqB0Ubc1dQRHg=/)
+- Resource: [React Node FullStack Library](https://www.udemy.com/share/101ZGqB0Ubc1dQRHg=/)
 
 ## Features
 - Node JS API (Backend) Development
