@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const morgan = require('morgan');
 const expressValidator = require('express-validator');
 const cookieParser = require('cookie-parser');
-const { mongoKey } = require('./config/keys');
+require('dotenv').config();
 
 // app
 const app = express();
@@ -24,16 +24,16 @@ const options = {
     useFindAndModify: false
 }
 mongoose
-    .connect(mongoKey, options)
+    .connect(process.env.MONGO_KEY, options)
     .then(() => console.log(`MongoDB Connected...`))
     .catch(err => console.log(err));
 // END DATABASE CONFIG
 
 // Use Routes middleware
-app.use('/api/user', require('./routes/user'));
+app.use('/api/auth', require("./routes/auth"));
+app.use('/api/user', require("./routes/user"));
 
 const port = process.env.PORT || 8000;
-
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
