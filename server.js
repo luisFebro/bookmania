@@ -1,9 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const { mongoKey } = require('./config/keys');
 
 // app
 const app = express();
+
+// Middlewares
+// Allow the app to accept JSON on req.body || replaces body-parser package
+app.use(express.json());
+app.use(morgan('dev'));
+app.use(cookieParser());
 
 // DATABASE CONFIG
 // Connect to Mongo
