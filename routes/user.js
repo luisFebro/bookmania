@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const { requireSignin } = require("../controllers/auth");
+const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 
 const { userById } = require("../controllers/user");
 
-router.get("/secret/:userId", requireSignin, (req, res) => {
+// this requires two headers: application/json and Bearer [token]
+// With the token approved, the authorized user can access other user's profiles too.
+// But with isAuth we limit this access and the user can only have access to his/her profile.
+router.get("/secret/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
     res.json({
         user: req.profile
     });

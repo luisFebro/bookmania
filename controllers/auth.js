@@ -63,6 +63,28 @@ exports.requireSignin = expressJwt({
     secret: process.env.JWT_SECRET,
     userProperty: "auth"
 });
+
+exports.isAuth = (req, res, next) => {
+    //req.auth from userProperty in requireSignin above.
+    // compares the current data from profile with authorization token.
+    let user = req.profile && req.auth && req.profile._id == req.auth._id;
+    if (!user) {
+        return res.status(403).json({ // html code for Forbidden
+            error: "Acesso Negado"
+        });
+    }
+    next();
+};
+
+exports.isAdmin = (req, res, next) => {
+    // if regular user, then deny access.
+    if (req.profile.role === 0) {
+        return res.status(403).json({
+            error: "Recurso Admin! Acesso negado"
+        });
+    }
+    next();
+};
 // END MIDDLEWARES
 
 
