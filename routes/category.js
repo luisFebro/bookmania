@@ -8,4 +8,5 @@ const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 router.post("/create/:userId", requireSignin, isAuth, isAdmin, createCategory);
 
 router.param("userId", userById)
+
 module.exports = router;

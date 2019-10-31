@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Schema, { ObjectId } = mongoose.Schema;
+const { ObjectId } = mongoose.Schema;
 const collectionName = "products";
 
 const data = {
@@ -38,6 +38,6 @@ const data = {
     }
 }
 
-const productSchema = new Schema(data, { timestamps: true });
+const productSchema = new mongoose.Schema(data, { timestamps: true });
 
 module.exports = mongoose.model("Product", productSchema, collectionName);
