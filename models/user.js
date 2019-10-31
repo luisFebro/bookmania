@@ -9,7 +9,8 @@ const data = {
         type: String,
         trim: true,
         required: true,
-        maxlength: 32
+        maxlength: 32,
+        unique: true
     },
     email: {
         type: String,
@@ -34,8 +35,8 @@ const data = {
         type: Array,
         default: []
     }
-}, { timestamps: true }
-const userSchema = new Schema(data);
+}
+const userSchema = new Schema(data, { timestamps: true });
 
 // virtual field to set an encrypted password
 userSchema

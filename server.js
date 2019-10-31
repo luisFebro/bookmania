@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require('morgan');
+const expressValidator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const { mongoKey } = require('./config/keys');
 
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
+app.use(expressValidator());
 
 // DATABASE CONFIG
 // Connect to Mongo
