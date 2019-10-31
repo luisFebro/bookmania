@@ -17,13 +17,13 @@ const data = {
         required: true,
         unique: true
     },
-    hashed_password: {
-        type: String,
-        required: true
-    },
     about: {
         type: String,
         trim: true
+    },
+    hashed_password: {
+        type: String,
+        required: true
     },
     salt: String,
     role: {
@@ -35,6 +35,32 @@ const data = {
         default: []
     }
 }, { timestamps: true }
-
 const userSchema = new Schema(data);
+
+// virtual field to set an encrypted password
+userSchema
+    .virtual("password") // Here 'password' is now a property on User documents.
+    .set(function(password) {
+        this._password = password;
+        this.salt = uuidv1();
+        this.hashed_password = this.encryptPassword(password);
+    })
+    .get(function() {
+        return this._password;
+    });
+
+userSchema.methods = {
+    encryptPassword: function(password) {
+        if (!password) return "";
+        try {
+            return crypto
+                .createHmac("sha1", this.salt)
+                .update(password)
+                .digest("hex");
+        } catch (err) {
+            return "";
+        }
+    }
+};
+
 module.exports = mongoose.model('User', userSchema, collectionName);

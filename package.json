@@ -18,7 +18,8 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongoose": "^5.7.7"
+    "mongoose": "^5.7.7",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "concurrently": "^5.0.0",
