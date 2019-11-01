@@ -51,6 +51,17 @@ exports.remove = (req, res) => {
     });
 };
 
+exports.getList = (req, res) => {
+    Category.find().exec((err, data) => {
+        if (err) {
+            return res.status(400).json({
+                error: dbErrorHandler(err)
+            });
+        }
+        res.json(data);
+    });
+};
+
 // MIDDLEWARES
 exports.getCategoryById = (req, res, next, id) => {
     Category.findById(id).exec((err, category) => {
@@ -65,15 +76,6 @@ exports.getCategoryById = (req, res, next, id) => {
 };
 // END MIDDLEWARES
 
-exports.getList = (req, res) => {
-    Category.find().exec((err, data) => {
-        if (err) {
-            return res.status(400).json({
-                error: dbErrorHandler(err)
-            });
-        }
-        res.json(data);
-    });
-};
+
 
 

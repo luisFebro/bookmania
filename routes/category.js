@@ -10,6 +10,7 @@ router.post("/:userId", requireSignin, isAuth, isAdmin, create);
 router.get("/:categoryId", read)
 router.delete("/:categoryId/:userId", requireSignin, isAuth, isAdmin, remove);
 router.put("/:categoryId/:userId", requireSignin, isAuth, isAdmin, update);
+
 router.get("/list/all", getList); // we can not use /categories directly since /:categoryId will be executed. We need one more level
 
 router.param("categoryId", getCategoryById)
