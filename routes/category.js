@@ -1,19 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-const { getUserById } = require("../controllers/user");
-const { create, read, update, remove, getList, getCategoryById } = require("../controllers/category");
-const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
+const { mwUserById } = require("../controllers/user");
+const { create, read, update, remove, getList, mwCategoryById } = require("../controllers/category");
+const { requireSignin, mwIsAuth, mwIsAdmin } = require("../controllers/auth");
 
 // @route  CRUD api/category
-router.post("/:userId", requireSignin, isAuth, isAdmin, create);
+router.post("/:userId", requireSignin, mwIsAuth, mwIsAdmin, create);
 router.get("/:categoryId", read)
-router.delete("/:categoryId/:userId", requireSignin, isAuth, isAdmin, remove);
-router.put("/:categoryId/:userId", requireSignin, isAuth, isAdmin, update);
+router.delete("/:categoryId/:userId", requireSignin, mwIsAuth, mwIsAdmin, remove);
+router.put("/:categoryId/:userId", requireSignin, mwIsAuth, mwIsAdmin, update);
 
 router.get("/list/all", getList); // we can not use /categories directly since /:categoryId will be executed. We need one more level
 
-router.param("categoryId", getCategoryById)
-router.param("userId", getUserById)
+router.param("categoryId", mwCategoryById)
+router.param("userId", mwUserById)
 
 module.exports = router;

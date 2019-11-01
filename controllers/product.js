@@ -131,8 +131,8 @@ exports.update = (req, res) => {
 };
 
 /**
- * sell (most popular products) / arrival (new products)
- * by sell = api/product/list/all?sortBy=sold&order=desc&limit=4
+ * sales (most popular products) / arrival (new products)
+ * by sales = api/product/list/all?sortBy=sold&order=desc&limit=4
  * by arrival = api/product/list/all?sortBy=createdAt&order=desc&limit=4
  * if no params are sent, then all products are returned
  */
@@ -157,9 +157,104 @@ exports.getList = (req, res) => {
         });
 };
 
+/**
+ * it will find the products based on the req product category
+ * other products that has the same category, will be returned
+ */
+exports.getListRelated = (req, res) => {
+    console.log("getList Related req product", req.product)
+    let limit = req.query.limit ? parseInt(req.query.limit) : 6; // 6 by default
+    // find this current category from the selected product but not include itself
+    Product.find({ _id: { $ne: req.product }, category: req.product.category }) //n1
+    .limit(limit)
+    // .select('-photo') // activate this for better readability in postman
+    .populate("category", "_id name")
+    .exec((err, products) => {
+        if (err) {
+            return res.status(400).json({
+                error: "Produtos não foram encontrados"
+            });
+        }
+        res.json(products);
+    });
+};
 
-// MIDDLEWARES
-exports.getProductById = (req, res, next, id) => {
+exports.getListCategory = (req, res) => {
+    Product.distinct("category", {}, (err, categories) => { // n2
+        if (err) {
+            return res.status(400).json({
+                error: "Categorias não encontradas"
+            });
+        }
+        res.json(categories);
+    });
+};
+
+/**
+ * list products by search
+ * we will implement product search in react frontend
+ * we will show categories in checkbox and price range in radio buttons
+ * as the user clicks on those checkbox and radio buttons
+ * we will make api request and show the products to users based on what he wants
+ */
+
+// route - make sure its post / we need body from the front end
+// router.post("/products/by/search", listBySearch);
+
+exports.postListBySearch = (req, res) => {
+    let order = req.body.order ? req.body.order : "desc";
+    let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
+    let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+    let skip = parseInt(req.body.skip);
+    let findArgs = {};
+
+    // console.log(order, sortBy, limit, skip, req.body.filters);
+    // console.log("findArgs", findArgs);
+
+    for (let key in req.body.filters) {
+        if (req.body.filters[key].length > 0) {
+            if (key === "price") {
+                // gte -  greater than price [0-10]
+                // lte - less than
+                findArgs[key] = {
+                    $gte: req.body.filters[key][0],
+                    $lte: req.body.filters[key][1]
+                };
+            } else {
+                findArgs[key] = req.body.filters[key];
+            }
+        }
+    }
+
+    Product.find(findArgs)
+        .select("-photo")
+        .populate("category")
+        .sort([[sortBy, order]])
+        .skip(skip)
+        .limit(limit)
+        .exec((err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    error: "Produtos não encontrados"
+                });
+            }
+            res.json({
+                size: data.length,
+                data
+            });
+        });
+};
+
+// MIDDLEWARES - mw
+exports.mwPhoto = (req, res, next) => {
+    if (req.product.photo.data) {
+        res.set("Content-Type", req.product.photo.contentType);
+        return res.send(req.product.photo.data);
+    }
+    next();
+};
+
+exports.mwProductById = (req, res, next, id) => {
     Product.findById(id).exec((err, product) => {
         if (err || !product) {
             return res.status(400).json({
@@ -171,3 +266,16 @@ exports.getProductById = (req, res, next, id) => {
     });
 };
 // END MIDDLEWARES
+
+
+// n1 - $ne - not included operator (because we do not want to return the targeted selected id product)
+/* n2 - .distinct: Finds the distinct values for a specified field across a single collection or view and returns the results in an array.
+* eg
+{ "_id": 1, "dept": "A", "item": { "sku": "111", "color": "red" }, "sizes": [ "S", "M" ] }
+{ "_id": 2, "dept": "A", "item": { "sku": "111", "color": "blue" }, "sizes": [ "M", "L" ] }
+{ "_id": 3, "dept": "B", "item": { "sku": "222", "color": "blue" }, "sizes": "S" }
+{ "_id": 4, "dept": "A", "item": { "sku": "333", "color": "black" }, "sizes": [ "S" ] }
+Inventory.distinct( "dept" )
+#
+[ "A", "B" ]
+*/

@@ -62,8 +62,8 @@ exports.getList = (req, res) => {
     });
 };
 
-// MIDDLEWARES
-exports.getCategoryById = (req, res, next, id) => {
+// MIDDLEWARES - mw
+exports.mwCategoryById = (req, res, next, id) => {
     Category.findById(id).exec((err, category) => {
         if (err || !category) {
             return res.status(400).json({

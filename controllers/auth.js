@@ -54,7 +54,6 @@ exports.signout = (req, res) => {
 };
 
 
-// MIDDLEWARES
 // Require signin Middleware - create privite route
 // This requires the cookie-parser
 // About express-jwt: Middleware that validates JsonWebTokens and sets req.user.
@@ -64,7 +63,8 @@ exports.requireSignin = expressJwt({
     userProperty: "auth"
 });
 
-exports.isAuth = (req, res, next) => {
+// MIDDLEWARES - mw
+exports.mwIsAuth = (req, res, next) => {
     //req.auth from userProperty in requireSignin above.
     // compares the current data from profile with authorization token.
     let user = req.profile && req.auth && req.profile._id == req.auth._id;
@@ -76,7 +76,7 @@ exports.isAuth = (req, res, next) => {
     next();
 };
 
-exports.isAdmin = (req, res, next) => {
+exports.mwIsAdmin = (req, res, next) => {
     // if regular user, then deny access.
     if (req.profile.role === 0) {
         return res.status(403).json({
