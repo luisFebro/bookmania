@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const { errorHandler } = require('../helpers/dbErrorHandler');
+const { dbErrorHandler } = require('../helpers/dbErrorHandler');
 const jwt = require('jsonwebtoken'); // to generate signed token
 const expressJwt = require('express-jwt'); // for authorization check
 
@@ -9,7 +9,7 @@ exports.signup = (req, res) => {
     newUser.save((err, user) => {
         if (err) {
             return res.status(400).json({
-                error: errorHandler(err)
+                error: dbErrorHandler(err)
             });
         }
         // Not includes sensitive password

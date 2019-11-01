@@ -24,7 +24,7 @@ const uniqueMessage = error => {
 /**
  * Get the erroror message from error object
  */
-exports.errorHandler = error => {
+exports.dbErrorHandler = error => {
     let message = "";
 
     if (error.code) {

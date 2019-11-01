@@ -1,14 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-const { createProduct, productById, read } = require("../controllers/product");
+const { create, read, remove, update, getProductById } = require("../controllers/product");
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
-const { userById } = require("../controllers/user");
+const { getUserById } = require("../controllers/user");
 
-router.get("/:productId", read); // Read a File
-router.post("/create/:userId", requireSignin, isAdmin, isAdmin, createProduct);
+// CRUD
+// @route  CRUD api/product
+router.get("/:productId", read);
+router.post("/:userId", requireSignin, isAdmin, isAdmin, create);
+router.delete("/:productId/:userId", requireSignin, isAuth, isAdmin, remove); // user is requested here because it makes sure that only an admin account can delete a product.
+router.put("/:productId/:userId", requireSignin, isAuth, isAdmin, update);
+// END CRUD
 
-router.param("userId", userById);
-router.param("productId", productById);
+router.param("userId", getUserById);
+router.param("productId", getProductById);
 
 module.exports = router;
