@@ -103,6 +103,7 @@ exports.update = (req, res) => {
         }
 
         let product = req.product;
+        // merging new fields with the current  product
         product = _.extend(product, fields);
 
         // 1kb = 1000
@@ -167,7 +168,7 @@ exports.getListRelated = (req, res) => {
     // find this current category from the selected product but not include itself
     Product.find({ _id: { $ne: req.product }, category: req.product.category }) //n1
     .limit(limit)
-    // .select('-photo') // activate this for better readability in postman
+    .select('-photo') // activate this for better readability in postman
     .populate("category", "_id name")
     .exec((err, products) => {
         if (err) {

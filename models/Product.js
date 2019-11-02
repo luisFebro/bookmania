@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema;
+const Schema = mongoose.Schema;
 const collectionName = "products";
 
 const data = {
@@ -21,7 +21,7 @@ const data = {
         maxlength: 32
     },
     category: {
-        type: ObjectId,
+        type: Schema.ObjectId,
         ref: "Category",
         required: true
     },
@@ -42,6 +42,6 @@ const data = {
     }
 }
 
-const productSchema = new mongoose.Schema(data, { timestamps: true });
+const productSchema = new Schema(data, { timestamps: true });
 
 module.exports = mongoose.model("Product", productSchema, collectionName);

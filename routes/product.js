@@ -26,7 +26,7 @@ router.put("/:productId/:userId", requireSignin, mwIsAuth, mwIsAdmin, update);
 //LISTS
 router.get("/list/all", getList);
 router.get("/list/related/:productId", getListRelated);
-router.get("/list/categories", getListCategory);
+router.get("/list/category", getListCategory);
 router.post("/list/by-search", postListBySearch);
 // END LISTS
 

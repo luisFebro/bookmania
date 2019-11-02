@@ -34,6 +34,10 @@ const data = {
     history: {
         type: Array,
         default: []
+    },
+    favoriteList: {
+        type: Schema.ObjectId,
+        ref: 'Product',
     }
 }
 const userSchema = new Schema(data, { timestamps: true });
