@@ -37,7 +37,7 @@ const data = {
     },
     favoriteList: {
         type: Schema.ObjectId,
-        ref: 'Product',
+        ref: 'Product'
     }
 }
 const userSchema = new Schema(data, { timestamps: true });

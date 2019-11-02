@@ -9,19 +9,6 @@ require('dotenv').config();
 // init app
 const app = express();
 
-// MIDDLEWARES
-app.use(express.json()); //n1
-app.use(morgan('dev'));
-app.use(cookieParser());
-app.use(expressValidator());
-app.use(cors());
-// routes
-app.use('/api/auth', require("./routes/auth"));
-app.use('/api/user', require("./routes/user"));
-app.use('/api/category', require("./routes/category"));
-app.use('/api/product', require("./routes/product"));
-// END MIDDLEWARES
-
 // DATABASE
 const options = {
     useNewUrlParser: true,
@@ -34,6 +21,19 @@ mongoose
     .then(() => console.log(`MongoDB Connected...`))
     .catch(err => console.log(err));
 // END DATABASE
+
+// MIDDLEWARES
+app.use(express.json()); //n1
+app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(expressValidator());
+app.use(cors());
+// routes
+app.use('/api/auth', require("./routes/auth"));
+app.use('/api/user', require("./routes/user"));
+app.use('/api/category', require("./routes/category"));
+app.use('/api/product', require("./routes/product"));
+// END MIDDLEWARES
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
