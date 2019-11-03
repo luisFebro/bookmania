@@ -42,7 +42,6 @@ export const authenticate = (data, next) => {
 };
 
 export const signout = next => {
-    alert("typeof window" + typeof window);
     if (typeof window !== "undefined") {
         localStorage.removeItem("jwt");
         next();
@@ -53,5 +52,16 @@ export const signout = next => {
                 console.log("signout", response);
             })
             .catch(err => console.log(err));
+    }
+};
+
+export const isAuthenticated = () => {
+    if (typeof window == "undefined") {
+        return false;
+    }
+    if (localStorage.getItem("jwt")) {
+        return JSON.parse(localStorage.getItem("jwt")); // prior: true || this JSON is here because we need to fetch the data to populate userDashboard
+    } else {
+        return false;
     }
 };
