@@ -9,19 +9,6 @@ require('dotenv').config();
 // init app
 const app = express();
 
-// DATABASE
-const options = {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true, // comment this out when this error occurs: MongoTimeoutError: Server selection timed out after 30000 ms || But be aware that things can not work properly
-    useFindAndModify: false
-}
-mongoose
-    .connect(process.env.MONGO_KEY, options)
-    .then(() => console.log(`MongoDB Connected...`))
-    .catch(err => console.log(err));
-// END DATABASE
-
 // MIDDLEWARES
 app.use(express.json()); //n1
 app.use(morgan('dev'));
@@ -34,6 +21,19 @@ app.use('/api/user', require("./routes/user"));
 app.use('/api/category', require("./routes/category"));
 app.use('/api/product', require("./routes/product"));
 // END MIDDLEWARES
+
+// DATABASE
+const options = {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true, // comment this out when this error occurs: MongoTimeoutError: Server selection timed out after 30000 ms || But be aware that things can not work properly
+    useFindAndModify: false
+}
+mongoose
+    .connect(process.env.MONGO_KEY, options)
+    .then(() => console.log(`MongoDB Connected...`))
+    .catch(err => console.log(err));
+// END DATABASE
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
