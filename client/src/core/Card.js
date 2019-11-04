@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ShowImage from './ShowImage';
 
-Card.propTypes = {
-    product: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        description: PropTypes.string.isRequired,
-        price: PropTypes.number.isRequired,
-    })
-}
+// Card.propTypes = {
+//     product: PropTypes.shape({
+//         name: PropTypes.string.isRequired,
+//         description: PropTypes.string.isRequired,
+//         price: PropTypes.number,
+//     })
+// }
 
 export default function Card({ product }) {
     return (
@@ -18,7 +18,7 @@ export default function Card({ product }) {
                 <div className="card-header">{product.name}</div>
                 <div className="card-body">
                     <ShowImage item={product} url="product" />
-                    <p>{product.description}</p>
+                    <p>{product && product.description.substring(0, 100)}</p>
                     <p>${product.price}</p>
                     <Link to="/">
                         <button className="btn btn-outline-primary mt-2 mb-2 mr-2">
