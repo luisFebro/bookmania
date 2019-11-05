@@ -1,5 +1,3 @@
-- Resource: [React Node FullStack Library](https://www.udemy.com/share/101ZGqB0Ubc1dQRHg=/)
-
 ## Features
 - Node API Codebase based on MVC (Model-View-Controller) architectural Design Pattern
 - Node JS API (Backend) Development
@@ -31,4 +29,6 @@ User Profile and Update Ability
 ## Authors
 - Luis Febro
 - Ryan Dhungel
+
+- Resource: [React Node FullStack Library](https://www.udemy.com/share/101ZGqB0Ubc1dQRHg=/)
 

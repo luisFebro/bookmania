@@ -1,4 +1,5 @@
 import { API } from "../config";
+import queryString from 'query-string';
 
 export const getProducts = sortBy => {
     return fetch(`${API}/product/list/all?sortBy=${sortBy}&order=desc&limit=6`, {
@@ -15,7 +16,6 @@ export const getCategories = () => {
         method: "GET"
     })
     .then(response => {
-        console.log("response from apiCore", response)
         return response.json();
     })
     .catch(error => console.log(error));
@@ -42,3 +42,17 @@ export const getFilteredProducts = (skip, limit, filters = {}) => {
             console.log(err);
         });
 };
+
+export const list = params => {
+    // turning obj params: {search: "react", category: ""}
+    const query = queryString.stringify(params);
+    // into query string: search=react&category=2321isddsa11d
+    return fetch(`${API}/product/list/search?${query}`, {
+        method: "GET"
+    })
+        .then(response => {
+            return response.json();
+        })
+        .catch(err => console.log(err));
+};
+

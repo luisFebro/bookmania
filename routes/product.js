@@ -7,6 +7,7 @@ const {
     remove,
     update,
     getList,
+    getListSearch,
     getListRelated,
     getListCategory,
     postListBySearch,
@@ -25,6 +26,7 @@ router.put("/:productId/:userId", requireSignin, mwIsAuth, mwIsAdmin, update);
 // END CRUD
 //LISTS
 router.get("/list/all", getList);
+router.get("/list/search", getListSearch);
 router.get("/list/related/:productId", getListRelated);
 router.get("/list/category", getListCategory);
 router.post("/list/by-search", postListBySearch);
