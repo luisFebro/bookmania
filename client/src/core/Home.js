@@ -11,8 +11,8 @@ const Home = () => {
 
     const loadProductsBySell = () => {
         getProducts("sold")
-        .then(data => {
-            if (data.error) {
+        .then((data = []) => {
+            if (data && data.error) {
                 setError(data.error);
             } else {
                 setProductsBySell(data);
@@ -22,8 +22,8 @@ const Home = () => {
 
     const loadProductsByArrival = () => {
         getProducts("createdAt")
-        .then(data => {
-            if (data.error) {
+        .then((data = []) => {
+            if (data && data.error) {
                 setError(data.error);
             } else {
                 setProductsByArrival(data);
@@ -46,13 +46,17 @@ const Home = () => {
             <h2 className="mb-4">New Arrivals</h2>
             <div className="row">
                 {productsByArrival.map((product, ind) => (
-                    <Card key={ind} product={product} />
+                    <div key={ind} className="col-4 mb-3">
+                        <Card  product={product} />
+                    </div>
                 ))}
             </div>
             <h2 className="mb-4">Best Sellers</h2>
             <div className="row">
                 {productsBySell.map((product, ind) => (
-                    <Card key={ind} product={product} />
+                    <div key={ind} className="col-4 mb-3">
+                        <Card  product={product} />
+                    </div>
                 ))}
             </div>
         </Layout>

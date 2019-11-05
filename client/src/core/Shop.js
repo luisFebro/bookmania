@@ -15,12 +15,12 @@ const Shop = () => {
     const [limit, setLimit] = useState(6);
     const [skip, setSkip] = useState(0);
     const [size, setSize] = useState(0);
-    const [filteredResults, setFilteredResults] = useState([0]);
+    const [filteredResults, setFilteredResults] = useState([]);
 
     const init = () => {
         getCategories()
-        .then(data => {
-            if (data.error) {
+        .then((data = []) => {
+            if (data && data.error) {
                 setError(data.error);
             } else {
                 setCategories(data);
@@ -30,8 +30,8 @@ const Shop = () => {
 
     const loadFilteredResults = newFilters => {
         // console.log(newFilters);
-        getFilteredProducts(skip, limit, newFilters).then(data => {
-            if (data.error) {
+        getFilteredProducts(skip, limit, newFilters).then((data = []) => {
+            if (data && data.error) {
                 setError(data.error);
             } else {
                 setFilteredResults(data.data);
@@ -43,8 +43,8 @@ const Shop = () => {
 
     const loadMore = () => {
         let toSkip = skip + limit;
-        getFilteredProducts(toSkip, limit, myFilters.filters).then(data => {
-            if (data.error) {
+        getFilteredProducts(toSkip, limit, myFilters.filters).then((data = []) => {
+            if (data && data.error) {
                 setError(data.error);
             } else {
                 // joining the current filteredResult with more data to load (...data.data)
@@ -126,8 +126,10 @@ const Shop = () => {
                 <div className="col-8">
                     <h2 className="mb-4"></h2>
                     <div className="row">
-                        {filteredResults.map((product, i) => (
-                            <Card key={i} product={product} />
+                        {filteredResults && filteredResults.map((product, i) => (
+                            <div key={i} className="col-4 mb-3">
+                                <Card  product={product} />
+                            </div>
                         ))}
                     </div>
                     <hr />
