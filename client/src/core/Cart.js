@@ -7,10 +7,12 @@ import Checkout from './Checkout';
 
 const Cart = () => {
     const [items, setItems] = useState([]);
+    const [run, setRun] = useState(false);
 
     useEffect(() => {
+        console.log("RUNNING SET ITEMS from CART")
         setItems(getCart());
-    }, [items]);
+    }, [run]);
 
     const showItems = items => {
         return (
@@ -24,6 +26,8 @@ const Cart = () => {
                         showAddToCartButton={false}
                         cartUpdate={true}
                         showRemoveProductButton={true}
+                        setRun={setRun}
+                        run={run}
                     />
                 ))}
             </div>

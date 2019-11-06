@@ -10,6 +10,8 @@ const Card = ({
     showAddToCartButton=true,
     cartUpdate=false,
     showRemoveProductButton=false,
+    setRun = f => f, // default value of function
+    run = undefined, // default value of undefined
 }) => {
     const [redirect, setRedirect] = useState(false)
     const [count, setCount] = useState(product.count); // product comes from localstorage
@@ -51,7 +53,10 @@ const Card = ({
         return (
             showRemoveProductButton && (
                 <button
-                    onClick={() => removeItem(product._id)}
+                    onClick={() => {
+                        removeItem(product._id);
+                        setRun(!run); //n1
+                    }}
                     className="btn btn-outline-danger mt-2 mb-2"
                 >
                     Remove Product
@@ -69,12 +74,11 @@ const Card = ({
     };
 
     const handleChange = productId => event => {
-        //NOT WORKING
+        setRun(!run); // n1
+        console.log("event.target.value", event.target.value)
         //condition to make sure we do not have negative values
-        console.log("IT is  been updated outside")
         setCount(event.target.value < 1 ? 1 : event.target.value);
         if (event.target.value >= 1) {
-            console.log("IT is  been updated")
             updateItem(productId, event.target.value);
         }
     };
@@ -91,7 +95,7 @@ const Card = ({
                         type="number"
                         className="form-control"
                         value={count}
-                        onChange={handleChange}
+                        onChange={handleChange(product._id)}
                     />
                 </div>
             </div>
@@ -131,3 +135,6 @@ const Card = ({
 };
 
 export default Card;
+
+
+// n1: run useEffect in parent Cart. whenever we increment/decrement or remove product... we use setRun so that we can run useEffect in parent component > Cart

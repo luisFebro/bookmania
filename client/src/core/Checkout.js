@@ -7,9 +7,8 @@ import { Link } from "react-router-dom";
 
 const Checkout = ({ products }) => {
     const getTotal = () => {
-        return products.reduce((currentValue, nextValue) => {
-            console.log("currentValue from checkout", currentValue);
-            return currentValue + nextValue.count * nextValue.price;
+        return products.reduce((accumulatedValue, nextValue) => { // accumatedValue grabs all the sums of nextValue
+            return accumulatedValue + nextValue.count * nextValue.price;
         }, 0);
     };
 
