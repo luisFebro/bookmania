@@ -86,6 +86,13 @@ export const removeItem = productId => {
     return cart;
 };
 
+export const emptyCart = next => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem("cart");
+        next();
+    }
+};
+
 // n1: The Array.from() method returns an Array object from any object with a length property or an iterable object.
 // parameters:
 /*
