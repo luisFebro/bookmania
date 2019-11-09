@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
-import { getProducts, getBraintreeClientToken, processPayment } from "./apiCore";
+import { getProducts, getBraintreeClientToken, processPayment, createOrder } from "./apiCore";
 import { emptyCart } from './cartHelpers';
 import Card from "./Card";
 import { isAuthenticated } from "../auth";
@@ -34,6 +34,10 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
     useEffect(() => {
         getToken(userId, token);
     }, [])
+
+    const handleAddress = event => {
+        setData({ ...data, address: event.target.value })
+    }
 
     const getTotal = () => {
         return products.reduce((accumulatedValue, nextValue) => { // accumatedValue grabs all the sums of nextValue
@@ -72,20 +76,28 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
             .then(response => {
                 // console.log(response)
                 setData({...data, success: response.success});
-                emptyCart(() => {
-                    console.log("payment success and cart is empty");
-                    setRun(!run);
-                    setData({
-                        loading: false,
-                        success: true
-                    });
-                })
                 // create order
+                const createOrderData = {
+                    products: products,
+                    transactionId: response.transaction.id,
+                    amount: response.transaction.amount,
+                    address: data.address
+                }
+
+                createOrder(userId, token, createOrderData)
+                .then(response => {
+                    emptyCart(() => {
+                        console.log("payment success and cart is empty");
+                        setRun(!run);
+                        setData({loading: false, success: response});
+                    })
+                })
+                .catch(error => {
+                    console.log(error);
+                    setData({ loading: false })
+                });
+                // end create order
             })
-            .catch(error => {
-                console.log(error);
-                setData({ loading: false })
-            });
         })
         .catch(error => {
             // console.log("dropin error: ", error);
@@ -98,6 +110,17 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
         <div onBlur={() => setData({ ...data, error: ''})}>
             {data.clientToken !== null && products.length > 0 ? (
                 <div>
+                    <div className="form-group mb-3">
+                        <label className="text-muted">Delivery Address:</label>
+                        <textarea
+                            rows="5"
+                            onChange={handleAddress}
+                            className="form-control"
+                            value={data.address}
+                            placeholder="Type your delivery address here..."
+                        >
+                        </textarea>
+                    </div>
                     <DropIn
                         options={{
                             authorization: data.clientToken,

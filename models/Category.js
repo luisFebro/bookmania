@@ -11,7 +11,6 @@ const data = {
         unique: true
     }
 }
-
 const categorySchema = new Schema(data, { timestamps: true });
 
 module.exports = mongoose.model("Category", categorySchema, collectionName);
