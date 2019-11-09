@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
-import { getProducts, getBraintreeClientToken, processPayment } from "./apiCore";
+import { getProducts, getBraintreeClientToken, processPayment, createOrder } from "./apiCore";
 import { emptyCart } from './cartHelpers';
 import Card from "./Card";
 import { isAuthenticated } from "../auth";
@@ -35,6 +35,10 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
         getToken(userId, token);
     }, [])
 
+    const handleAddress = event => {
+        setData({ ...data, address: event.target.value })
+    }
+
     const getTotal = () => {
         return products.reduce((accumulatedValue, nextValue) => { // accumatedValue grabs all the sums of nextValue
             return accumulatedValue + nextValue.count * nextValue.price;
@@ -68,29 +72,46 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
                 paymentMethodNonce: nonce,
                 amount: getTotal(products)
             }
+
             processPayment(userId, token, paymentData)
-            .then(response => {
-                // console.log(response)
-                setData({...data, success: response.success});
-                emptyCart(() => {
-                    console.log("payment success and cart is empty");
-                    setRun(!run);
-                    setData({
-                        loading: false,
-                        success: true
-                    });
+                .then(response => {
+                    console.log(response);
+                    // empty cart
+                    // create order
+
+                    const createOrderData = {
+                        products: products,
+                        transaction_id: response.transaction.id,
+                        amount: response.transaction.amount,
+                        address: data.address
+                    };
+
+                    createOrder(userId, token, createOrderData)
+                        .then(response => {
+                            emptyCart(() => {
+                                console.log(
+                                    "payment success and empty cart"
+                                );
+                                setData({
+                                    loading: false,
+                                    success: true
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            setData({ loading: false });
+                        });
                 })
-                // create order
+                .catch(error => {
+                    console.log(error);
+                    setData({ loading: false });
+                });
             })
             .catch(error => {
-                console.log(error);
-                setData({ loading: false })
+                // console.log("dropin error: ", error);
+                setData({ ...data, error: error.message });
             });
-        })
-        .catch(error => {
-            // console.log("dropin error: ", error);
-            setData({...data, error: error.message});
-        })
     }
 
     // test visa number: 4111 1111 1111 1111
@@ -98,6 +119,17 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
         <div onBlur={() => setData({ ...data, error: ''})}>
             {data.clientToken !== null && products.length > 0 ? (
                 <div>
+                    <div className="form-group mb-3">
+                        <label className="text-muted">Delivery Address:</label>
+                        <textarea
+                            rows="5"
+                            onChange={handleAddress}
+                            className="form-control"
+                            value={data.address}
+                            placeholder="Type your delivery address here..."
+                        >
+                        </textarea>
+                    </div>
                     <DropIn
                         options={{
                             authorization: data.clientToken,

@@ -10,7 +10,6 @@ const {
 const {
     read,
     update,
-    getListFavorite,
     mwUserById
 } = require("../controllers/user");
 
@@ -28,7 +27,7 @@ router.get("/secret/:userId", requireSignin, mwIsAuth, mwIsAdmin, (req, res) => 
 // @route  api/user
 router.get("/:userId", requireSignin, mwIsAuth, read);
 router.put("/:userId", requireSignin, mwIsAuth, update);
-router.get("/list/favorite/:userId", getListFavorite);
+// router.get("/list/favorite/:userId", getListFavorite);
 
 // Everytime there is a userId, this router will run and make this user info available in the request object
 router.param("userId", mwUserById);
