@@ -74,6 +74,7 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
             }
 
             processPayment(userId, token, paymentData)
+<<<<<<< HEAD
                 .then(response => {
                     console.log(response);
                     // empty cart
@@ -112,6 +113,38 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
                 // console.log("dropin error: ", error);
                 setData({ ...data, error: error.message });
             });
+=======
+            .then(response => {
+                // console.log(response)
+                setData({...data, success: response.success});
+                // create order
+                const createOrderData = {
+                    products: products,
+                    transactionId: response.transaction.id,
+                    amount: response.transaction.amount,
+                    address: data.address
+                }
+
+                createOrder(userId, token, createOrderData)
+                .then(response => {
+                    emptyCart(() => {
+                        console.log("payment success and cart is empty");
+                        setRun(!run);
+                        setData({loading: false, success: response});
+                    })
+                })
+                .catch(error => {
+                    console.log(error);
+                    setData({ loading: false })
+                });
+                // end create order
+            })
+        })
+        .catch(error => {
+            // console.log("dropin error: ", error);
+            setData({...data, error: error.message});
+        })
+>>>>>>> 021f8c1093c483f52e258acb63d1ded9dfdbc3c2
     }
 
     // test visa number: 4111 1111 1111 1111
