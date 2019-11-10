@@ -14,15 +14,15 @@ const {
     mwPhoto,
     mwProductById,
 } = require("../controllers/product");
-const { requireSignin, mwIsAuth, mwIsAdmin } = require("../controllers/auth");
+const { mwRequireSignin, mwIsAuth, mwIsAdmin } = require("../controllers/auth");
 const { mwUserById } = require("../controllers/user");
 
 // CRUD
 // @route  CRUD api/product
 router.get("/:productId", read);
-router.post("/:userId", requireSignin, mwIsAdmin, mwIsAdmin, create);
-router.delete("/:productId/:userId", requireSignin, mwIsAuth, mwIsAdmin, remove); // user is requested here because it makes sure that only an admin account can delete a product.
-router.put("/:productId/:userId", requireSignin, mwIsAuth, mwIsAdmin, update);
+router.post("/:userId", mwRequireSignin, mwIsAdmin, mwIsAdmin, create);
+router.delete("/:productId/:userId", mwRequireSignin, mwIsAuth, mwIsAdmin, remove); // user is requested here because it makes sure that only an admin account can delete a product.
+router.put("/:productId/:userId", mwRequireSignin, mwIsAuth, mwIsAdmin, update);
 // END CRUD
 //LISTS
 router.get("/list/all", getList);

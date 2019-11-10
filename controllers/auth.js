@@ -58,14 +58,14 @@ exports.signout = (req, res) => {
 // This requires the cookie-parser
 // About express-jwt: Middleware that validates JsonWebTokens and sets req.user.
 // This module lets you authenticate HTTP requests using JWT tokens in your Node.js applications. JWTs are typically used to protect API endpoints, and are often issued using OpenID Connect.
-exports.requireSignin = expressJwt({
+exports.mwRequireSignin = expressJwt({
     secret: process.env.JWT_SECRET,
     userProperty: "auth"
 });
 
 // MIDDLEWARES - mw
 exports.mwIsAuth = (req, res, next) => {
-    //req.auth from userProperty in requireSignin above.
+    //req.auth from userProperty in mwRequireSignin above.
     // compares the current data from profile with authorization token.
     let user = req.profile && req.auth && req.profile._id == req.auth._id;
     if (!user) {

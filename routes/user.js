@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    requireSignin,
+    mwRequireSignin,
     mwIsAuth,
     mwIsAdmin
 } = require("../controllers/auth");
@@ -19,15 +19,15 @@ const {
 // But with mwIsAuth we limit this access and the user can only have access to his/her profile.
 // With mwIsAdmin on, only admin can have access.
 // @route   GET api/user
-router.get("/secret/:userId", requireSignin, mwIsAuth, mwIsAdmin, (req, res) => {
+router.get("/secret/:userId", mwRequireSignin, mwIsAuth, mwIsAdmin, (req, res) => {
     res.json({
         user: req.profile
     });
 });
 
 // @route  api/user
-router.get("/:userId", requireSignin, mwIsAuth, read);
-router.put("/:userId", requireSignin, mwIsAuth, update);
+router.get("/:userId", mwRequireSignin, mwIsAuth, read);
+router.put("/:userId", mwRequireSignin, mwIsAuth, update);
 router.get("/list/favorite/:userId", getListFavorite);
 
 // Everytime there is a userId, this router will run and make this user info available in the request object
