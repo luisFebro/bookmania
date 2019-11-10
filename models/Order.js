@@ -30,7 +30,7 @@ const dataOrder = {
 }
 const OrderSchema = new Schema(dataOrder, { timestamps: true });
 
-const collectionNameOrder = "order";
+const collectionNameOrder = "orders";
 const Order = mongoose.model("Order", OrderSchema, collectionNameOrder);
 // end order
 
