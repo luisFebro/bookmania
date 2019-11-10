@@ -291,6 +291,28 @@ exports.mwProductById = (req, res, next, id) => {
         next();
     });
 };
+
+// @ desc update each product in the order list both subtracting the quantity and increase the number of sales of each.
+exports.mwDecreaseQuantity = (req, res, next) => {
+    // bulk operations
+    let bulkOps = req.body.order.products.map(item => {
+        return {
+            updateOne: {
+                filter: { _id: item._id },
+                update: { $inc: { quantity: -item.count, sold: +item.count } } // n3
+            }
+        };
+    });
+
+    Product.bulkWrite(bulkOps, {}, (error, products) => { // n4
+        if (error) {
+            return res.status(400).json({
+                error: "Could not update product"
+            });
+        }
+        next();
+    });
+};
 // END MIDDLEWARES
 
 
@@ -305,3 +327,35 @@ Inventory.distinct( "dept" )
 #
 [ "A", "B" ]
 */
+
+// n3 - $ inc operator
+/* e.g
+DOC:
+{
+  _id: 1,
+  sku: "abc123",
+  quantity: 10,
+  metrics: {
+    orders: 2,
+    ratings: 3.5
+  }
+}
+UPDATE:
+db.products.update(
+   { sku: "abc123" },
+   { $inc: { quantity: -2, "metrics.orders": 1 } }
+)
+AFTER UPDATE:
+{
+   "_id" : 1,
+   "sku" : "abc123",
+   "quantity" : 8,
+   "metrics" : {
+      "orders" : 3,
+      "ratings" : 3.5
+   }
+}
+*/
+
+
+// n4 - bulkWrite - Performs multiple write operations with controls for order of execution.
