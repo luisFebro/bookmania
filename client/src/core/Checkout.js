@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
-import { getProducts, getBraintreeClientToken, processPayment } from "./apiCore";
+import { getProducts, getBraintreeClientToken, processPayment, createOrder } from "./apiCore";
 import { emptyCart } from './cartHelpers';
 import Card from "./Card";
 import { isAuthenticated } from "../auth";
 import { Link } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 
-// This Checkout is working in the Incognato mode only, Paypay fails very often.
 const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
     const [data, setData] = useState({
         success: false,
@@ -26,7 +25,7 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
             if (data && data.error) {
                 setData({ ...data, error: data.error });
             } else {
-                setData({ clientToken: data.clientToken }); // don´t insert ...data, otherwise the success will be true somehow, a mystery....
+                setData({ clientToken: data.clientToken });
             }
         });
     };
@@ -34,6 +33,10 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
     useEffect(() => {
         getToken(userId, token);
     }, [])
+
+    const handleAddress = event => {
+        setData({ ...data, address: event.target.value })
+    }
 
     const getTotal = () => {
         return products.reduce((accumulatedValue, nextValue) => { // accumatedValue grabs all the sums of nextValue
@@ -57,8 +60,7 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
         // send the nonce to your server
         // nonce = data.instance.requestPaymentMethod()
         let nonce;
-        let getNonce = data.instance
-        .requestPaymentMethod()
+        let getNonce = data.instance.requestPaymentMethod()
         .then(data => {
             nonce = data.nonce;
             // once you have nonce (card type, card number) send nonce as 'paymentMethodNonce'
@@ -68,29 +70,47 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
                 paymentMethodNonce: nonce,
                 amount: getTotal(products)
             }
+
             processPayment(userId, token, paymentData)
-            .then(response => {
-                // console.log(response)
-                setData({...data, success: response.success});
-                emptyCart(() => {
-                    console.log("payment success and cart is empty");
-                    setRun(!run);
-                    setData({
-                        loading: false,
-                        success: true
-                    });
+                .then(response => {
+                    console.log(response);
+                    // empty cart
+                    // create order
+
+                    const createOrderData = {
+                        products: products,
+                        transaction_id: response.transaction.id,
+                        amount: response.transaction.amount,
+                        address: data.address
+                    };
+
+                    createOrder(userId, token, createOrderData)
+                        .then(response => {
+                            setRun(!run);
+                            emptyCart(() => {
+                                console.log(
+                                    "payment success and empty cart"
+                                );
+                                setData({
+                                    loading: false,
+                                    success: true
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            setData({ loading: false });
+                        });
                 })
-                // create order
+                .catch(error => {
+                    console.log(error);
+                    setData({ loading: false });
+                });
             })
             .catch(error => {
-                console.log(error);
-                setData({ loading: false })
+                // console.log("dropin error: ", error);
+                setData({ ...data, error: error.message });
             });
-        })
-        .catch(error => {
-            // console.log("dropin error: ", error);
-            setData({...data, error: error.message});
-        })
     }
 
     // test visa number: 4111 1111 1111 1111
@@ -98,17 +118,30 @@ const Checkout = ({ products, setRun = f => f, run = undefined  }) => {
         <div onBlur={() => setData({ ...data, error: ''})}>
             {data.clientToken !== null && products.length > 0 ? (
                 <div>
+                    <div className="form-group mb-3">
+                        <label className="text-muted">Delivery Address:</label>
+                        <textarea
+                            rows="5"
+                            onChange={handleAddress}
+                            className="form-control"
+                            value={data.address}
+                            placeholder="Type your delivery address here..."
+                        >
+                        </textarea>
+                    </div>
                     <DropIn
                         options={{
                             authorization: data.clientToken,
                             paypal: {
                                 flow: "vault"
-                            }
+                            },
+                            isSecure: false,
+                            isSameSite: 'Lax'
                         }}
                         onInstance={instance => (data.instance = instance)}
                     />
                     <button
-                        onClick={buy}
+                        onClick={() => buy()}
                         className="btn btn-success btn-block"
                     >
                     Pay
