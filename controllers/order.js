@@ -18,8 +18,8 @@ exports.create = (req, res) => {
 
 exports.getListOrders = (req, res) => {
     Order.find()
-        .populate("user", "_id, name, address")
-        .sort("-created") // -created ???
+        .populate("user", "_id name address")
+        .sort({"createdAt": -1}) // sort most recent orders
         .exec((err, orders) => {
             if (err) {
                 return res.status(400).json({
@@ -29,3 +29,7 @@ exports.getListOrders = (req, res) => {
             res.json(orders);
         });
 }
+
+exports.getStatusValues = (req, res) => {
+    res.json(Order.schema.path("status").enumValues);
+};
