@@ -4,18 +4,18 @@ const router = express.Router();
 const { mwRequireSignin, mwIsAuth, mwIsAdmin } = require("../controllers/auth");
 const { mwUserById, mwAddOrderToUserHistory } = require("../controllers/user");
 const { mwDecreaseQuantity } = require("../controllers/product");
-const { create, getListOrders, getStatusValues } = require("../controllers/order");
+const { mwOrderById, create, getListOrders, getStatusValues, updateOrderStatus } = require("../controllers/order");
 
-// @ route POST api/order/create/:userId
+// @ routes api/order/...
 // @ desc Add a new order
 router.post("/create/:userId", mwRequireSignin, mwIsAuth, mwAddOrderToUserHistory, mwDecreaseQuantity, create);
-
-// @ route GET api/order/list/all/:userId
 router.get("/list/all/:userId", mwRequireSignin, mwIsAuth, mwIsAdmin, getListOrders)
-// @ route GET api/order/list/all/:userId
+// @ desc get the value of enum for order status ["Not processed", "Processing", "Shipped", "Delivered", "Cancelled"]
 router.get("/status-values/:userId", mwRequireSignin, mwIsAuth, mwIsAdmin, getStatusValues)
+router.put("/:orderId/status/:userId", mwRequireSignin, mwIsAuth, mwIsAdmin, updateOrderStatus)
 
 
 router.param("userId", mwUserById);
+router.param("orderId", mwOrderById);
 
 module.exports = router;

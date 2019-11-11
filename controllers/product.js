@@ -4,6 +4,52 @@ const _ = require("lodash");
 const fs = require("fs");
 const { dbErrorHandler } = require("../helpers/dbErrorHandler");
 
+// MIDDLEWARES - mw
+exports.mwPhoto = (req, res, next) => {
+    if (req.product.photo.data) {
+        res.set("Content-Type", req.product.photo.contentType);
+        return res.send(req.product.photo.data);
+    }
+    next();
+};
+
+exports.mwProductById = (req, res, next, id) => {
+    Product.findById(id)
+    .populate("category")
+    .exec((err, product) => {
+        if (err || !product) {
+            return res.status(400).json({
+                error: "Produto não encontrado"
+            });
+        }
+        req.product = product;
+        next();
+    });
+};
+
+// @ desc update each product in the order list both subtracting the quantity and increase the number of sales of each.
+exports.mwDecreaseQuantity = (req, res, next) => {
+    // bulk operations
+    let bulkOps = req.body.order.products.map(item => {
+        return {
+            updateOne: {
+                filter: { _id: item._id },
+                update: { $inc: { quantity: -item.count, sold: +item.count } } // n3
+            }
+        };
+    });
+
+    Product.bulkWrite(bulkOps, {}, (error, products) => { // n4
+        if (error) {
+            return res.status(400).json({
+                error: "Could not update product"
+            });
+        }
+        next();
+    });
+};
+// END MIDDLEWARES
+
 exports.create = (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
@@ -268,53 +314,6 @@ exports.postListBySearch = (req, res) => {
             });
         });
 };
-
-// MIDDLEWARES - mw
-exports.mwPhoto = (req, res, next) => {
-    if (req.product.photo.data) {
-        res.set("Content-Type", req.product.photo.contentType);
-        return res.send(req.product.photo.data);
-    }
-    next();
-};
-
-exports.mwProductById = (req, res, next, id) => {
-    Product.findById(id)
-    .populate("category")
-    .exec((err, product) => {
-        if (err || !product) {
-            return res.status(400).json({
-                error: "Produto não encontrado"
-            });
-        }
-        req.product = product;
-        next();
-    });
-};
-
-// @ desc update each product in the order list both subtracting the quantity and increase the number of sales of each.
-exports.mwDecreaseQuantity = (req, res, next) => {
-    // bulk operations
-    let bulkOps = req.body.order.products.map(item => {
-        return {
-            updateOne: {
-                filter: { _id: item._id },
-                update: { $inc: { quantity: -item.count, sold: +item.count } } // n3
-            }
-        };
-    });
-
-    Product.bulkWrite(bulkOps, {}, (error, products) => { // n4
-        if (error) {
-            return res.status(400).json({
-                error: "Could not update product"
-            });
-        }
-        next();
-    });
-};
-// END MIDDLEWARES
-
 
 // n1 - $ne - not included operator (because we do not want to return the targeted selected id product)
 /* n2 - .distinct: Finds the distinct values for a specified field across a single collection or view and returns the results in an array.

@@ -1,6 +1,20 @@
 const Category = require("../models/Category");
 const { dbErrorHandler } = require("../helpers/dbErrorHandler");
 
+// MIDDLEWARES - mw
+exports.mwCategoryById = (req, res, next, id) => {
+    Category.findById(id).exec((err, category) => {
+        if (err || !category) {
+            return res.status(400).json({
+                error: "A categoria não existe"
+            });
+        }
+        req.category = category;
+        next();
+    });
+};
+// END MIDDLEWARES
+
 exports.create = (req, res) => {
     const { name } = req.body
     Category.findOne({ name })
@@ -61,20 +75,6 @@ exports.getList = (req, res) => {
         res.json(data);
     });
 };
-
-// MIDDLEWARES - mw
-exports.mwCategoryById = (req, res, next, id) => {
-    Category.findById(id).exec((err, category) => {
-        if (err || !category) {
-            return res.status(400).json({
-                error: "A categoria não existe"
-            });
-        }
-        req.category = category;
-        next();
-    });
-};
-// END MIDDLEWARES
 
 
 
