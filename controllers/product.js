@@ -219,7 +219,7 @@ exports.getListSearch = (req, res) => {
         Product.find(query, (err, products) => {
             if (err) {
                 return res.status(400).json({
-                    error: errorHandler(err)
+                    error: dbErrorHandler(err)
                 });
             }
             res.json(products);

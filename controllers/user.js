@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const { Order, CartItem } = require("../models/Order");
+const { dbErrorHandler } = require("../helpers/dbErrorHandler");
 
 // MIDDLEWARES - mw
 exports.mwUserById = (req, res, next, id) => {
@@ -79,5 +81,19 @@ exports.getListFavorite = (req, res) => {
         }
         res.json(categories);
     });
+};
+
+exports.getListPurchaseHistory = (req, res) => {
+    Order.find({ user: req.profile._id })
+        .populate("user", "_id name")
+        .sort({createAt: -1})
+        .exec((err, orders) => {
+            if (err) {
+                return res.status(400).json({
+                    error: dbErrorHandler(err)
+                });
+            }
+            res.json(orders);
+        });
 };
 
