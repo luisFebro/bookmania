@@ -1,5 +1,6 @@
 const { Order, CartItem } = require("../models/Order");
 const { dbErrorHandler } = require("../helpers/dbErrorHandler");
+const sgMail = require('@sendgrid/mail');
 
 // MIDDLEWARES
 exports.mwOrderById = (req, res, next, id) => {
@@ -18,8 +19,7 @@ exports.mwOrderById = (req, res, next, id) => {
 // END MIDDLEWARES
 
 exports.create = (req, res) => {
-    // console.log("CREATE ORDER: ", req.body);
-    console.log("req from order", req);
+    console.log("CREATE ORDER: ", req.body.order);
     req.body.order.user = req.profile;
     const order = new Order(req.body.order);
     order.save((error, data) => {
@@ -28,6 +28,27 @@ exports.create = (req, res) => {
                 error: dbErrorHandler(error)
             });
         }
+        // send email alert to admin
+        sgMail.setApiKey(process.env.SEND_GRID_KEY);
+        const msg = {
+            //sender
+            from: 'BookMania Order Notification <bookmania@gmail.com>',
+            //recipients
+            isMultiple: true, // the recipients can't see the other ones when this is on
+            to: ['babadooweb@gmail.com', 'luis.felipe.bruno@hotmail.com', 'mr.febro@hotmail.com'],
+            //
+            subject: `A new order is received, Pal`,
+            html: `
+            <p>Customer name: ${req.profile.name}</p>
+            <p>Total products: ${order.products.length}</p>
+            <p>Total cost: ${order.amount}</p>
+            <p>Login to dashboard to the order in detail.</p>
+        `
+        };
+        sgMail.send(msg)
+        .then(() => console.log('Mail sent successfully'))
+        .catch(error => console.error(error.toString()));
+        // end send email alert to admin
         res.json(data);
     });
 };
